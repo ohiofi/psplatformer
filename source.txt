@@ -1,0 +1,576 @@
+title Platformer Example
+author Mr Riley
+homepage ohiofi.com
+background_color #220044
+text_color yellow
+animate_interval 0.3
+sprite_size 16
+realtime_interval 0.1
+key_repeat_interval 0.2
+throttle_movement
+zoomscreen 20x15
+
+========
+OBJECTS
+========
+
+(SafeZone is marker for squares where falling objects wont wall. Their natural habitat is directly above Platform squares.)
+SafeZone
+transparent
+
+(Animated is a boolean flag for tracking if a sprite has moved to the next frame in its animation)
+Animated
+transparent
+
+(Token objects to store directional instructions. See jumping for an example.)
+GoL
+transparent
+
+GoR
+transparent
+
+GoU
+transparent
+
+GoD
+transparent
+
+PlayerStanding
+#ffff00 #008000 #ff0000 #000000
+......2222......
+.....222222.....
+......0000......
+.....030030.....
+.....030030.....
+......0000......
+.....111111.....
+....11111111....
+....11111111....
+....01111110....
+....01111110....
+....22222222....
+.....222222.....
+.....22..22.....
+.....22..22.....
+....333..333....
+
+PlayerR_frame0
+#ffff00 #008000 #ff0000 #000000
+.......222......
+......2222222...
+.......0000.....
+......000300....
+......000300....
+.......0000.....
+......111111....
+.....11111111...
+.....111111100..
+.....100111.00..
+.....100111.....
+......22222.....
+......22222.....
+......22.22.....
+......22.22.....
+......333333....
+
+PlayerR_frame1
+#ffff00 #008000 #ff0000 #000000
+........222.....
+.......2222222..
+........0000....
+.......000300...
+.......000300...
+......110000....
+.....11111111...
+.....111111100..
+.....100111100..
+.....100111.....
+.......2222.....
+.......2222.....
+......222222....
+.....322..223...
+.....32...23....
+.....3....3.....
+
+PlayerR_frame2
+#ffff00 #008000 #ff0000 #000000
+................
+........222.....
+.......2222222..
+.......0000.....
+......000300....
+......000300....
+.......0000.....
+......11111.....
+.....1111111....
+.....11111100...
+.....10011100...
+......00222.....
+.......222......
+.....32222233...
+.....33.22333...
+......33.233....
+
+PlayerL_frame0
+#ffff00 #008000 #ff0000 #000000
+......222.......
+...2222222......
+.....0000.......
+....003000......
+....003000......
+.....0000.......
+....111111......
+...11111111.....
+..001111111.....
+..00.111001.....
+.....111001.....
+.....22222......
+.....22222......
+.....22.22......
+.....22.22......
+....333333......
+
+PlayerL_frame1
+#ffff00 #008000 #ff0000 #000000
+.....222........
+..2222222.......
+....0000........
+...003000.......
+...003000.......
+....000011......
+...11111111.....
+..001111111.....
+..001111001.....
+.....111001.....
+.....2222.......
+.....2222.......
+....222222......
+...322..223.....
+....32...23.....
+.....3....3.....
+
+PlayerL_frame2
+#ffff00 #008000 #ff0000 #000000
+................
+.....222........
+..2222222.......
+.....0000.......
+....003000......
+....003000......
+.....0000.......
+.....11111......
+....1111111.....
+...00111111.....
+...00111001.....
+.....22200......
+......222.......
+...33222223.....
+...33322.33.....
+....332.33......
+
+PlayerLFalling
+#ffff00 #008000 #ff0000 #000000
+......222.......
+...2222222......
+.....0000.......
+.00.003000......
+.00.003000......
+..1..0000.......
+..1111111.......
+...1111111......
+...1111111......
+....111001......
+....222002......
+..22222222223...
+..22......223...
+.333........3...
+................
+................
+
+PlayerRFalling
+#ffff00 #008000 #ff0000 #000000
+.......222......
+......2222222...
+.......0000.....
+......000300.00.
+......000300.00.
+.......0000..1..
+.......1111111..
+......1111111...
+......1111111...
+......100111....
+......200222....
+...32222222222..
+...322......22..
+...3........333.
+................
+................
+
+
+
+Target_frame0
+#8b0000 #ffbdbd
+................
+................
+.0.....00.....0.
+..0..000000..0..
+...0000110000...
+...0011111100...
+..001110011100..
+..001100001100..
+.00110000001100.
+.00110000001100.
+..001100001100..
+..001110011100..
+...0011111100...
+...0000110000...
+..0..000000..0..
+.0.....00.....0.
+
+Target_frame1
+#8b0000 #ffbdbd
+................
+................
+.0.....00.....0.
+..0..000000..0..
+...0000000000...
+...0001111000...
+..000111111000..
+..001110011100..
+.00011000011000.
+.00011000011000.
+..001110011100..
+..000111111000..
+...0001111000...
+...0000000000...
+..0..000000..0..
+.0.....00.....0.
+
+Wall
+#000000 #ffffff #880000 #aaffee #cc44cc #00cc55 #0000aa #eeee77 #dd8855 #664400 #ff7777 #333333 #777777 #aaff66 #0088ff #bbbbbb
+BBBBBBBBBBBBBBBB
+999B999999999999
+999B999999999999
+999B999999999999
+BBBBBBBBBBBBBBBB
+999999999B999999
+999999999B999999
+999999999B999999
+BBBBBBBBBBBBBBBB
+999999B999999999
+999999B999999999
+999999B999999999
+BBBBBBBBBBBBBBBB
+999999999999B999
+999999999999B999
+999999999999B999
+
+Crate
+#ffff00 #5c4033 #ffaa00
+..000000000000..
+.01111111111110.
+2101111111111010
+2110111111110110
+2111011111101110
+2111101111011110
+2111110110111110
+2111111111111110
+2111111111111110
+2111110110111110
+2111101111011110
+2111011111101110
+2110111111110110
+2101111111111010
+.21111111111110.
+..222222222220..
+
+Ladder
+#ffff00 #008000 #ff0000 #000000
+.......1........
+.......1........
+.......11.1.....
+........11......
+........1.......
+.....1.11.......
+......11........
+.......1........
+.......11.1.....
+........11......
+........1.......
+.....1.11.......
+......11........
+.......11.1.....
+........11......
+........1.......
+
+Background
+lightblue
+
+
+
+
+=======
+LEGEND
+=======
+. = Background
+T = Target_frame0
+W = Wall
+C = Crate
+L = Ladder
+Target = Target_frame0 or Target_frame1
+@ = Crate and Target_frame0
+p = PlayerStanding
+PlayerFalling = PlayerLFalling or PlayerRFalling
+PlayerR = PlayerR_frame0 or PlayerR_frame1 or PlayerR_frame2
+PlayerL = PlayerL_frame0 or PlayerL_frame1 or PlayerL_frame2
+Player = PlayerStanding or PlayerFalling or PlayerR or PlayerL
+
+( Keep Core Objects below, edit or remove the examples in lowercase. )
+PlayerActive = PlayerR or PlayerL
+
+(Shorthand to check if and object has directional instructions)
+Direction = GoU or GoD or GoR or GoL
+
+
+(Objects that fall until they hit a Platform.)
+Falling = Player or Crate
+
+(Obstacles can't be passed from any directions e. walls, creatures, etc.)
+Obstacle = Crate or Wall
+
+(Platform is something player can walk on. Unless the Platform object is also an Obstacle they can be passed through horizontally. By default player can jump and drop through platforms.)
+Platform = Obstacle or Crate or Ladder
+Animation = Animated
+
+
+=======
+SOUNDS
+=======
+
+player move 91111107
+player cantmove 7438107
+crate move 52462307
+crate action 56874507
+
+================
+COLLISIONLAYERS
+================
+
+(Keep Core objects in this order. Change evreything else as you wish.)
+Background
+SafeZone
+Animation
+Direction
+Target, Ladder
+Obstacle, Player, Crate
+
+======
+RULES
+======
+
+(Target Animation)
+( If Target is currently on frame 1 and hasn't animated yet this tick, flip it to frame 0 and attach the NextFrame marker to block single-turn cascades )
+[stationary Player] [ Target_frame1 no Animated ] -> [stationary Player] [ Target_frame0 Animated ] 
+[stationary Player] [ Target_frame0 no Animated ] -> [stationary Player] [ Target_frame1 Animated ] 
+
+( 1. Player turning - MUST COME FIRST )
+[ right PlayerStanding ] -> [ PlayerR_frame0 ]
+[ left  PlayerStanding ] -> [ PlayerL_frame0 ]
+[ right PlayerL ]        -> [ PlayerR_frame0 ]
+[ left  PlayerR ]        -> [ PlayerL_frame0 ]
+
+( 3. Player Animation - Runs after turning )
+( If facing/moving right on frame 2 and hasn't animated yet this tick, loop back to frame 0 and attach the NextFrame marker to block single-turn cascades )
+[ right PlayerR_frame2 no Animated ] -> [ right PlayerR_frame0 Animated ]
+[ right PlayerR_frame1 no Animated ] -> [ right PlayerR_frame2 Animated ]
+[ right PlayerR_frame0 no Animated ] -> [ right PlayerR_frame1 Animated ]
+[ up PlayerR_frame2 no Animated ] -> [ up PlayerR_frame0 Animated ]
+[ up PlayerR_frame1 no Animated ] -> [ up PlayerR_frame2 Animated ]
+[ up PlayerR_frame0 no Animated ] -> [ up PlayerR_frame1 Animated ]
+[ left PlayerL_frame2 no Animated ] -> [ left PlayerL_frame0 Animated ]
+[ left PlayerL_frame1 no Animated ] -> [ left PlayerL_frame2 Animated ]
+[ left PlayerL_frame0 no Animated ] -> [ left PlayerL_frame1 Animated ]
+[ up PlayerL_frame2 no Animated ] -> [ up PlayerL_frame0 Animated ]
+[ up PlayerL_frame1 no Animated ] -> [ up PlayerL_frame2 Animated ]
+[ up PlayerL_frame0 no Animated ] -> [ up PlayerL_frame1 Animated ]
+[ Animated ] -> [ ]
+
+(On top of Platform there's a SafeZone, that pevents Falling objects from, you know, falling.)
+up [ Platform | ] ->  [ Platform | SafeZone ]
+up [ no Platform  | ] -> [ | no SafeZone ]
+
+
+(If a Falling object is not in a SafeZone (and has no directional orders) it falls)
+[ Falling no SafeZone no Direction ] -> [ down Falling ]
+
+(Player takes a falling pose.)
+[ PlayerR no SafeZone no Direction ] -> [ PlayerRFalling ]
+[ PlayerL no SafeZone no Direction ] -> [ PlayerLFalling ]
+
+(Player landing)
+[ PlayerRFalling SafeZone no Direction ] -> [ PlayerR_frame0 SafeZone]
+[ PlayerLFalling SafeZone no Direction ] -> [ PlayerL_frame0 SafeZone ]
+
+(2. The diectional are iterpreted, standing frame is just turned into a walking frame, actually moving objects are told to move on...)
+[ stationary PlayerR GoR ] -> [ right PlayerR GoR ]
+[ stationary PlayerR GoR ] -> [ PlayerR ]
+[ stationary PlayerL GoL ] -> [ left PlayerL GoL ]
+[ stationary PlayerL GoL ] -> [ PlayerL ]
+
+[ stationary PlayerLFalling GoL ] -> [ left PlayerLFalling GoL ]
+[ stationary PlayerRFalling GoR ] -> [ right PlayerRFalling GoR ]
+
+[ stationary PlayerLFalling GoD ] -> [ down PlayerLFalling GoD ]
+[ stationary PlayerRFalling GoD ] -> [ down PlayerRFalling GoD ]
+
+(Pushing Crates. Crates wont make any sense without this.)
+right [ > PlayerR | Crate ] -> [ > PlayerR GoR | > Crate ]
+left  [ > PlayerL | Crate ] -> [ > PlayerL GoL | > Crate ]
+
+
+[ left  PlayerL no Direction ] -> [ PlayerL GoL ]
+[ left  PlayerL no Direction ] -> [ PlayerL GoL ]
+
+(Make sure trying to move up or down when it's not possible wont cause a tick)
+vertical [ > Player | Obstacle ] -> cancel
+
+[ down PlayerR no Direction ] -> [ PlayerRFalling GoD ]
+[ down PlayerL no Direction ] -> [ PlayerLFalling GoD ]
+
+[ action PlayerR no Direction ] -> [ up PlayerRFalling up GoR ] sfx0
+[ action PlayerL no Direction ] -> [ up PlayerLFalling up GoL ] sfx0
+
+(3. ...and are finally moved.)
+[ right Player GoR ] -> [ right Player ]
+[ left  Player GoL ] -> [ left  Player ]
+[ down  Player GoD ] -> [ down Player ]
+[ action    Player GoU ] -> [ up Player ]
+
+(Clear up the go-instructions that are sometimes left lingering )
+[ Direction no Player ] -> [ ]
+
+( Player turning
+[ right PlayerStanding ] -> [ PlayerR_frame0 ]
+[ left  PlayerStanding ] -> [ PlayerL_frame0 ]
+[ right PlayerL ] -> [ PlayerR_frame0 ]
+[ left  PlayerR ] -> [ PlayerL_frame0 ])
+
+[ > Crate | Target no Crate ] -> [ | action Crate Target ]
+
+==============
+WINCONDITIONS
+==============
+
+All Target on Crate
+
+=======
+LEVELS
+=======
+
+( Level 1 )
+WpWWWWWWWWWWWWWWWWWW
+W..................W
+W...........C......W
+W....C.....WWW.....W
+W...WWW...L........W
+W......L.CL........W
+W......LWWW........W
+W......L...L.......W
+W.....WWW..L.......W
+W.........WW.C..C..W
+W........L...W.WWWWW
+W........L....L....W
+W.....T..L.WW.L....W
+W...WWWWWL....LT.T.W
+WWWWWWWWWWWWWWWWWWWW
+
+( Level 2 )
+WWWWWWWWWWWWWWWWWWWWWpWWW
+W.....L.................W
+W.....L.................W
+W.....L.................W
+W...C.L.....C.C.........W
+W..WWWL....WWWWW........W
+W.....LC.C.L.....C......W
+W.....WWWWWL....WWWW....W
+W..........L.C...L..L...W
+W..........LWWWWWL..L.C.W
+W.......C.CL.....L..LWW.W
+W....WWWWWWW.....L..L...W
+W................L..L...W
+WTTTTTTTTT..........L...W
+WWWWWWWWWWWWWWWWWWWWWWWWW
+
+
+
+
+
+WWWWWWWW
+W......W
+W......W
+WP.CT..W
+WWWWWWWW
+
+WWWWWWWWWW
+W.......PW
+W.C......W
+WT..CTW..W
+WWWWWWWWWW
+
+WWWWWWWW.W
+WP.......W
+W........W
+W........W
+W..C.C...W
+W......T.W
+WWWWWWWWWW
+
+WWWWW.P...WWWW
+WWW........WWW
+WWW.........WW
+WWWC.....C...W
+W............W
+WT..........WW
+WWWWWW..WWW.WW
+WWWWWWWWWWWTWW
+
+WWWWWWWWWWW
+W.TTTWTTT.W
+W...CPC...W
+W.CCWWWCC.W
+W...WWW...W
+WWWWWWWWWWW
+
+WWWWWWWW
+WWW...WW
+WTPC..WW
+WWW.CTWW
+WTWWC.WW
+W.W.T.WW
+WC.@CCTW
+W...T..W
+WWWWWWWW
+
+WWWWWWWW
+WW....WW
+W.T.@.WW
+W.T.C..W
+W.W@@W.W
+W..@P@.W
+WW.CC.WW
+WW....WW
+WWWWWWWW
+
+WWWWWWWWWWWWWWWWWWW
+WWWWW...WWWWWWWWWWW
+WWWWWC..WWWWWWWWWWW
+WWWWW..CWWWWWWWWWWW
+WWW..C.C.WWWWWWWWWW
+WWW.W.WW.WWWWWWWWWW
+W...W.WW.WWWWW..TTW
+W.C..C..........TTW
+WWWWW.WWW.WPWW..TTW
+WWWWW.....WWWWWWWWW
+WWWWWWWWWWWWWWWWWWW
+
+
